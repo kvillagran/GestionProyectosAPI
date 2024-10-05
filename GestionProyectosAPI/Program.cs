@@ -1,36 +1,49 @@
+// Program.cs
+using AutoMapper;
+using GestionProyectosAPI.Data;
+using GestionProyectosAPI.Profiles;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
-namespace GestionProyectosAPI
-{
-    public class Program
+var builder = WebApplication.CreateBuilder(args);
+
+// Configurar la cadena de conexión a la base de datos
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Agregar servicios al contenedor.
+
+// Configurar Entity Framework Core con SQL Server
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+// Configurar AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+// Configurar los controladores y manejar ciclos
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        // Ignorar referencias circulares para evitar ciclos infinitos
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
-            // Add services to the container.
+// Configurar Swagger para documentación de API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+var app = builder.Build();
 
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+// Configurar el pipeline HTTP.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
