@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GestionProyectosAPI.Data;
@@ -12,6 +13,7 @@ namespace GestionProyectosAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]  // Requiere autenticación para acceder
     public class ProyectosController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -54,6 +56,7 @@ namespace GestionProyectosAPI.Controllers
 
         // POST: api/Proyectos
         [HttpPost]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden crear
         public async Task<ActionResult<ProyectoReadDto>> PostProyecto(ProyectoCreateDto proyectoCreateDto)
         {
             if (!ModelState.IsValid)
@@ -80,6 +83,7 @@ namespace GestionProyectosAPI.Controllers
 
         // PUT: api/Proyectos/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden modificar
         public async Task<IActionResult> PutProyecto(int id, ProyectoCreateDto proyectoUpdateDto)
         {
             if (id <= 0)
@@ -123,6 +127,7 @@ namespace GestionProyectosAPI.Controllers
 
         // DELETE: api/Proyectos/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden eliminar
         public async Task<IActionResult> DeleteProyecto(int id)
         {
             var proyecto = await _context.Proyectos.FindAsync(id);
@@ -143,3 +148,4 @@ namespace GestionProyectosAPI.Controllers
         }
     }
 }
+

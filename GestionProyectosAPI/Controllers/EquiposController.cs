@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GestionProyectosAPI.Data;
@@ -11,6 +12,7 @@ namespace GestionProyectosAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]  // Requiere autenticación para acceder
     public class EquiposController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -53,6 +55,7 @@ namespace GestionProyectosAPI.Controllers
 
         // POST: api/Equipos
         [HttpPost]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden crear
         public async Task<ActionResult<EquipoReadDto>> PostEquipo(EquipoCreateDto equipoCreateDto)
         {
             if (!ModelState.IsValid)
@@ -72,6 +75,7 @@ namespace GestionProyectosAPI.Controllers
 
         // PUT: api/Equipos/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden modificar
         public async Task<IActionResult> PutEquipo(int id, EquipoCreateDto equipoUpdateDto)
         {
             if (id <= 0)
@@ -108,6 +112,7 @@ namespace GestionProyectosAPI.Controllers
 
         // DELETE: api/Equipos/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden eliminar
         public async Task<IActionResult> DeleteEquipo(int id)
         {
             var equipo = await _context.Equipos.FindAsync(id);
