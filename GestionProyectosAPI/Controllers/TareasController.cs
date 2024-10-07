@@ -1,7 +1,7 @@
-﻿// GestionProyectosAPI/Controllers/TareasController.cs
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GestionProyectosAPI.Data;
@@ -13,6 +13,7 @@ namespace GestionProyectosAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]  // Requiere autenticación para acceder
     public class TareasController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -57,6 +58,7 @@ namespace GestionProyectosAPI.Controllers
 
         // POST: api/Tareas
         [HttpPost]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden crear
         public async Task<ActionResult<TareaReadDto>> PostTarea(TareaCreateDto tareaCreateDto)
         {
             if (!ModelState.IsValid)
@@ -89,6 +91,7 @@ namespace GestionProyectosAPI.Controllers
 
         // PUT: api/Tareas/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden modificar
         public async Task<IActionResult> PutTarea(int id, TareaCreateDto tareaUpdateDto)
         {
             if (id <= 0)
@@ -138,6 +141,7 @@ namespace GestionProyectosAPI.Controllers
 
         // DELETE: api/Tareas/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Administrador")]  // Solo los administradores pueden eliminar
         public async Task<IActionResult> DeleteTarea(int id)
         {
             var tarea = await _context.Tareas.FindAsync(id);
